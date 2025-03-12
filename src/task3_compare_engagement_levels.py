@@ -43,8 +43,12 @@ def map_engagement_level(df):
     # 'Low' -> 1
     # 'Medium' -> 2
     # 'High' -> 3
+    df = df.withColumn("EngagementScore",
+                       when(col("EngagementLevel") == "Low", 1)
+                       .when(col("EngagementLevel") == "Medium", 2)
+                       .when(col("EngagementLevel") == "High", 3))
 
-    pass  # Remove this line after implementing the function
+    return df
 
 def compare_engagement_levels(df):
     """
@@ -62,8 +66,8 @@ def compare_engagement_levels(df):
     # 2. Group by JobTitle and calculate average EngagementScore.
     # 3. Round the average to two decimal places.
     # 4. Return the result DataFrame.
-
-    pass  # Remove this line after implementing the function
+    result_df = df.groupBy("JobTitle").agg(spark_round(avg("EngagementScore"), 2).alias("AvgEngagementLevel"))
+    return result_df
 
 def write_output(result_df, output_path):
     """
@@ -86,10 +90,10 @@ def main():
     spark = initialize_spark()
     
     # Define file paths
-    input_file = "/workspaces/Employee_Engagement_Analysis_Spark/input/employee_data.csv"
-    output_file = "/workspaces/Employee_Engagement_Analysis_Spark/outputs/task3/engagement_levels_job_titles.csv"
+    input_file = "employee_data.csv"
+    output_file = "outputs/task3/engagement_levels_job_titles.csv"
     
-    # Load data
+   # Load data
     df = load_data(spark, input_file)
     
     # Perform Task 3
